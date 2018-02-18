@@ -7,9 +7,8 @@
   (let ((range (- high low)))
     (+ low (random range))))
 
-(define (estimate-integral trials x-low y-low x-high y-high pred)
-  (let ((total-area (* (- x-high x-low) (- y-high y-low))))
-  (* total-area (* (monte-carlo trials pred)))))
+(define (estimate-integral trials area)
+  (* area (monte-carlo trials predicate-of-circle)))
 
 (define (monte-carlo trials experiment)
   (define (iter trials-remaining trials-passed)
@@ -23,16 +22,10 @@
                   trials-passed))))
   (iter trials 0))
 
-(define (predicate-of-circle x y r x-low y-low x-high y-high)
+(define (predicate-of-circle)
   (let ((random-x (random-in-range x-low x-high))
         (random-y (random-in-range y-low y-high)))
-    (<= (+ (expt (- x random-x) 2) (expt (- y random-y) 2) ) (expt r 2))))
-
-(define (pred2)
-  (let ((random-x (random-in-range x-low x-high))
-        (random-y (random-in-range y-low y-high)))
-  (lambda () (<= (+ (expt (- 5 random-x) 2) (expt (- 7 random-y) 2) ) (expt 3 2)) )))
-
+    (<= (+ (expt (- random-x center-x) 2) (expt (- random-y center-y) 2) ) (expt radius 2))))
 
 (define center-x 5)
 (define center-y 7)
@@ -41,9 +34,6 @@
 (define y-low 4)
 (define x-high 8)
 (define y-high 10)
+(define area (* (- x-high x-low) (- y-high y-low)))
 
-(define predicate (predicate-of-circle center-x center-y radius x-low y-low x-high y-high))
-
-  (print (monte-carlo 100 pred2))
-
-;(print (estimate-integral 200 x-low y-low x-high y-high predicate))
+(print (estimate-integral 10000 area))
